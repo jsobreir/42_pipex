@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/03 15:42:29 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/10 19:43:41 by jsobreir         ###   ########.fr       */
+/*   Created: 2024/07/10 20:00:00 by jsobreir          #+#    #+#             */
+/*   Updated: 2024/07/10 20:00:45 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 void	error()
 {
@@ -31,7 +31,7 @@ int	main(int argc, char **argv, char **envp)
 	int	fd[2];
 	int	pid;
 
-	if (argc != 5)
+	if (argc < 5)
 		bad_format();
 	args.argv = argv;
 	parse_cmd(&args);

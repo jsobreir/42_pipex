@@ -12,7 +12,6 @@ all: $(NAME)
 
 $(NAME):
 	$(CC) $(FLAGS) -c $(SRC)
-	ar rcs $(NAME) $(OBJ)
 
 main: all
 	$(CC) $(FLAGS) -L. $(NAME)
