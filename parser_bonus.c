@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   parser_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 16:07:14 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/10 18:45:38 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/12 17:28:22 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
-void	free_paths(char **paths, int i)
+void	free_paths(char **paths, int i, int	do_exit)
 {
 	while(i--)
 		free(paths[i]);
 	free(paths);
-	exit(EXIT_FAILURE);
+	if (do_exit == 1)
+		exit(EXIT_FAILURE);
+	else
+		return ;
 }
 
 char	*get_path(char	*cmd, char **envp)
@@ -36,31 +39,61 @@ char	*get_path(char	*cmd, char **envp)
 	i = 0;
 	while(paths[i])
 	{
-		if (!ft_strjoin(paths[i], "/"))
-			free_paths(paths, i);
-		if (!ft_strjoin(paths[i], cmd))
-			free_paths(paths, i);
+		paths[i] = ft_strjoin(paths[i], "/");
+		if (!paths[i])
+			free_paths(paths, i, 1);
+		paths[i] = ft_strjoin(paths[i], cmd);
+		if (!paths[i])
+			free_paths(paths, i, 1);
 		if (access(paths[i], R_OK) == 0)
 			return (paths[i]);
 		i++;
 	}
-	free_paths(paths, i);
+	free_paths(paths, i, 1);
 	return (0);
 }
 
 void	parse_cmd(t_args *args)
 {
 	char	**argv;
+	char	***cmds;
+	int		argc;
+	int		i;
 	
+	cmds = args->cmds;
+	argc = args->argc - 3;
 	argv = args->argv;
-	args->cmd1 = ft_split(argv[2], ' ');
-	if (!args->cmd1)
-		exit(EXIT_FAILURE);
-	args->cmd2 = ft_split(argv[3], ' ');
-	if (!args->cmd2)
+	i = 0;
+	while (i < argc)
 	{
-		free(args->cmd1);
-		exit(EXIT_FAILURE);
+		cmds[i] = ft_split(argv[i + 2], ' ');
+		if (!cmds[i])
+		{
+			while (cmds[i--])
+				free(cmds[i]);
+			free(cmds);
+		}
+		i++;
 	}
-	
 }
+
+// int main (int argc, char **argv)
+// {
+// 	t_args	args;
+
+// 	args.argc = argc;
+// 	args.argv = argv;
+// 	parse_cmd(&args);
+// 	int	i = 0;
+// 	argc -= 3;
+// 	while (argc-- > 0)
+// 	{
+// 		i = 0;
+// 		while (i < 2)
+// 		{
+// 			printf("%s  ", args.cmds[argc][i]);
+// 			i++;
+// 		}
+// 		printf("\n");
+// 	}
+// }
