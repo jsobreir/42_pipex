@@ -39,11 +39,12 @@ $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
 
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(OBJ) $(OBJ_BONUS)
 	$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f $(NAME_BONUS)
 	$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all

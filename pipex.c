@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:42:29 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/15 16:47:34 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/17 12:35:40 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,46 +34,48 @@ void	error(char *error, char *after_msg, int *fd, t_args *args)
 	exit(EXIT_FAILURE);
 }
 
-void bad_format(void)
+void	bad_format(void)
 {
 	ft_putstr_fd("\e[31mError: please specify you arguments.\e[0m\n", 2);
 	ft_putstr_fd("Ex: FILE_1 ""COMMAND 1"" ""COMMAND 2"" FILE_2\n", 2);
-	exit(EXIT_FAILURE);	
+	exit (EXIT_FAILURE);
 }
 
-static void	child_process(int pid, t_args *args, int *fd, char **envp)
+static void	exec(int *pid, t_args *args, int *fd, char **envp)
 {
-	if (pid == 0)
+	if (pid[0] == 0)
 	{
 		close(fd[0]);
 		dup2(args->filein_fd, STDIN_FILENO);
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
-		if(execve(get_path(args->cmd1[0], envp), args->cmd1, envp) == -1)
-			error("zsh: command not found: ", args->argv[2], fd, args);		
+		if (execve(get_path(args->cmd1[0], envp), args->cmd1, envp) == -1)
+			error("zsh: command not found: ", args->argv[2], fd, args);
 	}
-}
-
-static void	parent_process(int pid, t_args *args, int *fd, char **envp)
-{
-	if (pid != 0)
+	if (pid[1] == 0)
 	{
-		waitpid(-1, NULL, 0);
 		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		dup2(args->fileout_fd, STDOUT_FILENO);
-		if(execve(get_path(args->cmd2[0], envp), args->cmd2, envp) == -1)
-			error("zsh: command not found: ", args->argv[3], fd, args);	
-		exit(EXIT_SUCCESS);
+		if (execve(get_path(args->cmd2[0], envp), args->cmd2, envp) == -1)
+			error("zsh: command not found: ", args->argv[2], fd, args);
 	}
+}
+
+void	free_all(t_args *args)
+{
+	free_paths(args->cmd1, 2, 0);
+	free_paths(args->cmd2, 2, 1);
+	close(args->filein_fd);
+	close(args->fileout_fd);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_args	args;
-	int	fd[2];
-	int	pid;
+	int		fd[2];
+	int		pid[2];
 
 	if (argc != 5)
 		bad_format();
@@ -87,14 +89,13 @@ int	main(int argc, char **argv, char **envp)
 		error("zsh: No such file or directory: ", argv[4], fd, &args);
 	if (pipe(fd) == -1)
 		error("error: pipe", 0, fd, &args);
-	pid = fork();
-	if (pid < 0)
+	pid[0] = fork();
+	if (pid[0] < 0)
 		error("error: fork", 0, fd, &args);
-	child_process(pid, &args, fd, envp);
-	parent_process(pid, &args, fd, envp);
-	close(args.filein_fd);
-	close(args.fileout_fd);
-	free_paths(args.cmd1, 2, 0);
-	free_paths(args.cmd2, 2, 1);
-	while (wait(NULL) > 0);
+	pid[1] = fork();
+	if (pid[1] < 0)
+		error("error: fork", 0, fd, &args);
+	exec(pid, &args, fd, envp);
+	free_all(&args);
+	return (0);
 }

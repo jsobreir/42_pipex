@@ -1,6 +1,3 @@
-PRINTF_DIR = printf
-PRINTF = $(PRINTF_DIR)/printf.a
-
 SRC	 =	ft_isalnum.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c 	\
 	ft_strlcat.c ft_strncmp.c ft_substr.c ft_atoi.c ft_isalpha.c 			\
 	ft_itoa.c ft_memcpy.c  ft_putendl_fd.c ft_strchr.c  ft_strlcpy.c 		\
@@ -23,12 +20,8 @@ HEADER = libft.h
 all: $(NAME)
 
 # Need to link both the objects and the printf objects to the libft.a archive
-$(NAME): $(PRINTF) $(OBJ)
+$(NAME): $(OBJ)
 	ar rcs $(NAME) $(OBJ)
-	ar rcs $(NAME) $(PRINTF_DIR)/*.o
-
-$(PRINTF):
-	$(MAKE) -C $(PRINTF_DIR)
 
 main: all
 	$(CC) $(FLAGS) -L. $(NAME)
@@ -36,11 +29,9 @@ main: all
 clean:
 	rm -rf $(OBJ) $(BONUS_OBJ)
 	rm -rf *.o
-	$(MAKE) -C $(PRINTF_DIR) clean
 
 fclean: clean
 	rm -f $(NAME) a.out
-	$(MAKE) -C $(PRINTF_DIR) fclean
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:20:00 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/06/28 12:55:37 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/17 12:28:58 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # include <stdio.h>
 # include <string.h>
 # include "get_next_line/get_next_line_bonus.h"
-# include "./printf/ft_printf.h"
 
 typedef struct s_list
 {
