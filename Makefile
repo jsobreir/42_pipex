@@ -27,7 +27,7 @@ CFLAGS = -Wall -Wextra -Werror -I$(LIBFT_DIR) -g
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(OBJ) -o $(NAME) -L$(LIBFT_DIR) -lft
+	$(CC) -Wall -Wextra -Werror $(OBJ) -o $(NAME) -L$(LIBFT_DIR) -lft
 
 bonus: $(OBJ_BONUS)
 	$(CC) $(OBJ_BONUS) -o $(NAME_BONUS) -L$(LIBFT_DIR) -lft

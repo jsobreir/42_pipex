@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:42:29 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/17 12:35:40 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/19 17:27:03 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ void	error(char *error, char *after_msg, int *fd, t_args *args)
 		free_paths(args->cmd1, 2, 0);
 	if (args->cmd2)
 		free_paths(args->cmd2, 2, 1);
-	exit(EXIT_FAILURE);
+	exit(0);
 }
 
 void	bad_format(void)
 {
 	ft_putstr_fd("\e[31mError: please specify you arguments.\e[0m\n", 2);
 	ft_putstr_fd("Ex: FILE_1 ""COMMAND 1"" ""COMMAND 2"" FILE_2\n", 2);
-	exit (EXIT_FAILURE);
+	exit (0);
 }
 
 static void	exec(int *pid, t_args *args, int *fd, char **envp)
