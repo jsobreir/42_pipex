@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:42:29 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/19 17:27:03 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/24 21:54:35 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,29 @@ void	error(char *error, char *after_msg, int *fd, t_args *args)
 	if (after_msg != 0)
 		ft_putstr_fd(after_msg, 2);
 	ft_putchar_fd('\n', 2);
-	if (fd)
-	{
+	if (fd[0])
 		close(fd[0]);
+	if (fd[1])
 		close(fd[1]);
-	}
-	if (args->filein_fd)
+	if (args->filein_fd && args->filein_fd != -1)
 		close(args->filein_fd);
-	if (args->fileout_fd)
+	if (args->fileout_fd && args->fileout_fd != -1)
 		close(args->fileout_fd);
 	if (args->cmd1)
-		free_paths(args->cmd1, 2, 0);
+		free_paths(args->cmd1);
 	if (args->cmd2)
-		free_paths(args->cmd2, 2, 1);
-	exit(0);
+		free_paths(args->cmd2);
+	exit(EXIT_FAILURE);
 }
 
-void	bad_format(void)
+static void	first_child(t_args *args, int *fd, char **envp)
 {
-	ft_putstr_fd("\e[31mError: please specify you arguments.\e[0m\n", 2);
-	ft_putstr_fd("Ex: FILE_1 ""COMMAND 1"" ""COMMAND 2"" FILE_2\n", 2);
-	exit (0);
-}
+	int		pid;
 
-static void	exec(int *pid, t_args *args, int *fd, char **envp)
-{
-	if (pid[0] == 0)
+	pid = fork();
+	if (pid < 0)
+		error("error: fork", 0, fd, args);
+	if (pid == 0)
 	{
 		close(fd[0]);
 		dup2(args->filein_fd, STDIN_FILENO);
@@ -52,31 +49,35 @@ static void	exec(int *pid, t_args *args, int *fd, char **envp)
 		if (execve(get_path(args->cmd1[0], envp), args->cmd1, envp) == -1)
 			error("zsh: command not found: ", args->argv[2], fd, args);
 	}
-	if (pid[1] == 0)
+}
+
+static void	second_child(t_args *args, int *fd, char **envp)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid < 0)
+		error("error: fork", 0, fd, args);
+	if (pid == 0)
 	{
 		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		dup2(args->fileout_fd, STDOUT_FILENO);
 		if (execve(get_path(args->cmd2[0], envp), args->cmd2, envp) == -1)
-			error("zsh: command not found: ", args->argv[2], fd, args);
+			error("zsh: command not found: ", args->argv[3], fd, args);
 	}
-}
-
-void	free_all(t_args *args)
-{
-	free_paths(args->cmd1, 2, 0);
-	free_paths(args->cmd2, 2, 1);
-	close(args->filein_fd);
-	close(args->fileout_fd);
+	else
+		wait(NULL);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_args	args;
 	int		fd[2];
-	int		pid[2];
 
+	fd[0] = 0;
+	fd[1] = 0;
 	if (argc != 5)
 		bad_format();
 	args.argv = argv;
@@ -89,13 +90,11 @@ int	main(int argc, char **argv, char **envp)
 		error("zsh: No such file or directory: ", argv[4], fd, &args);
 	if (pipe(fd) == -1)
 		error("error: pipe", 0, fd, &args);
-	pid[0] = fork();
-	if (pid[0] < 0)
-		error("error: fork", 0, fd, &args);
-	pid[1] = fork();
-	if (pid[1] < 0)
-		error("error: fork", 0, fd, &args);
-	exec(pid, &args, fd, envp);
+	first_child(&args, fd, envp);
+	wait(NULL);
+	close(fd[1]);
+	second_child(&args, fd, envp);
+	close(fd[0]);
 	free_all(&args);
 	return (0);
 }

@@ -6,27 +6,15 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 20:00:00 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/17 12:43:41 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/24 22:06:08 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	error(char *msg)
-{
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
-
-void	bad_format(void)
-{
-	ft_putstr_fd("\e[31mError: please specify you arguments.\e[0m\n", 2);
-	ft_putstr_fd("Ex: FILE_1 ""COMMAND 1"" ""COMMAND 2"" FILE_2\n", 2);
-	exit(EXIT_FAILURE);
-}
-
 void	parent_process(int pid, int *new_fd)
 {
+	(void)pid;
 	waitpid(pid, NULL, 0);
 	dup2(new_fd[0], STDIN_FILENO);
 	close(new_fd[0]);
@@ -39,10 +27,10 @@ void	do_pipe(t_args *args, char **envp, int i)
 	int	pid;
 
 	if (pipe(new_fd) == -1)
-		error("pipe");
+		error("pipe", NULL, new_fd, args);
 	pid = fork();
 	if (pid < 0)
-		error("fork");
+		error("fork", NULL, new_fd, args);
 	if (pid == 0)
 	{
 		if (i == 0)
@@ -54,7 +42,7 @@ void	do_pipe(t_args *args, char **envp, int i)
 		close(new_fd[0]);
 		close(new_fd[1]);
 		if (execve(get_path(args->cmds[i][0], envp), args->cmds[i], NULL) == -1)
-			error("execve2");
+			error("zsh: command not found: ", args->cmds[i][0], NULL, args);
 	}
 	else
 		parent_process(pid, new_fd);
@@ -69,17 +57,18 @@ int	main(int argc, char **argv, char **envp)
 		bad_format();
 	args.filein_fd = open(argv[1], O_RDONLY);
 	if ((args.filein_fd < 0))
-		error("file");
+		error("file", NULL, NULL, &args);
 	args.fileout_fd = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (args.fileout_fd < 0)
-		error("file");
+		error("file", NULL, NULL, &args);
 	args.argc = argc;
 	args.argv = argv;
 	args.cmds = malloc((argc - 3) * sizeof(char **));
+	if (!args.cmds)
+		error("Error:", NULL, NULL, &args);
 	parse_cmd(&args);
 	i = -1;
 	while (++i < argc - 3)
 		do_pipe(&args, envp, i);
-	close(args.filein_fd);
-	close(args.fileout_fd);
+	free_all(&args);
 }

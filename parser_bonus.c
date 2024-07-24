@@ -6,21 +6,22 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 16:07:14 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/17 12:46:56 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/24 20:53:53 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	free_paths(char **paths, int i, int do_exit)
+void	free_paths(char **paths)
 {
+	int	i;
+
+	i = 0;
+	while (paths[i] != NULL)
+		i++;
 	while (i--)
 		free(paths[i]);
 	free(paths);
-	if (do_exit == 1)
-		exit(EXIT_FAILURE);
-	else
-		return ;
 }
 
 char	*get_path(char	*cmd, char **envp)
@@ -38,38 +39,37 @@ char	*get_path(char	*cmd, char **envp)
 	while (paths[i])
 	{
 		paths[i] = ft_strjoin(paths[i], "/");
-		if (!paths[i])
-			free_paths(paths, i, 1);
 		paths[i] = ft_strjoin(paths[i], cmd);
 		if (!paths[i])
-			free_paths(paths, i, 1);
+		{
+			free_paths(paths);
+			return (NULL);
+		}
 		if (access(paths[i], X_OK) == 0)
 			return (paths[i]);
 		i++;
 	}
-	free_paths(paths, i, 1);
 	return (0);
 }
 
 void	parse_cmd(t_args *args)
 {
 	char	**argv;
-	char	***cmds;
 	int		argc;
 	int		i;
 
-	cmds = args->cmds;
-	argc = args->argc - 3;
+	argc = args->argc - 4;
 	argv = args->argv;
 	i = 0;
 	while (i < argc)
 	{
-		cmds[i] = ft_split(argv[i + 2], ' ');
-		if (!cmds[i])
+		args->cmds[i] = ft_split(argv[i + 2], ' ');
+		if (!args->cmds[i])
 		{
-			while (cmds[i--])
-				free(cmds[i]);
-			free(cmds);
+			while (i--)
+				free_paths(args->cmds[i]);
+			free(args->cmds);
+			error("Error: ", NULL, NULL, args);
 		}
 		i++;
 	}

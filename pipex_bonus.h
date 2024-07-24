@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 16:07:27 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/17 12:44:25 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/07/24 22:04:59 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ typedef struct s_args
 
 char	*get_path(char	*cmd1, char **envp);
 void	parse_cmd(t_args *args);
-void	free_paths(char **paths, int i, int do_exit);
+void	free_paths(char **paths);
+void	error(char *error, char *after_msg, int *fd, t_args *args);
+void	bad_format(void);
+void	free_all(t_args *args);
 
 #endif
