@@ -29,8 +29,8 @@ all: $(NAME)
 $(NAME): $(OBJ) $(LIBFT)
 	$(CC) -Wall -Wextra -Werror $(OBJ) -o $(NAME) -L$(LIBFT_DIR) -lft
 
-bonus: $(OBJ_BONUS)
-	$(CC) -Wall -Wextra -Werror $(OBJ_BONUS) -o $(NAME_BONUS) -L$(LIBFT_DIR) -lft
+bonus: $(NAME) $(OBJ_BONUS)
+	$(CC) -Wall -Wextra -Werror -o $(NAME_BONUS) $(OBJ_BONUS) -L$(LIBFT_DIR) -lft
 
 %.o: %.c $(HEADER) $(HEADER_BONUS)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -43,8 +43,7 @@ clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f $(NAME_BONUS)
+	rm -f $(NAME) $(NAME_BONUS)
 	$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all

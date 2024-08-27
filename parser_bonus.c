@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 16:07:14 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/24 20:53:53 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:04:11 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	parse_cmd(t_args *args)
 	argc = args->argc - 4;
 	argv = args->argv;
 	i = 0;
-	while (i < argc)
+	while (i <= argc)
 	{
 		args->cmds[i] = ft_split(argv[i + 2], ' ');
 		if (!args->cmds[i])

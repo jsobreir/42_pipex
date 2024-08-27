@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 21:55:38 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/07/24 22:05:16 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:08:27 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	free_all(t_args *args)
 	int	n;
 
 	i = 0;
-	while (args->cmds[i])
+	while (i <= args->argc - 4)
 	{
 		n = 0;
 		while (args->cmds[i][n] != NULL)
