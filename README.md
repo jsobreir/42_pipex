@@ -1,5 +1,4 @@
 # Pipex
-My own very first library.
 
 The goal of this project is to write a program that replicates the ` | ` (pipe) object in Shell.
 
