@@ -6,7 +6,7 @@
 /*   By: jsobreir <jsobreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 16:07:27 by jsobreir          #+#    #+#             */
-/*   Updated: 2024/08/27 11:32:51 by jsobreir         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:23:31 by jsobreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <sys/wait.h>
+# include <fcntl.h>
 # include "../libft/libft.h"
 
 typedef struct s_args
